@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#082f36">
+  <title>UNO Online — Juega en familia</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="UNO Online inicio"><span class="uno-mark">UNO</span><span>ONLINE</span></a>
+      <div class="top-actions">
+        <span id="connection" class="connection"><i></i> Conectando…</span>
+        <button id="soundToggle" class="icon-btn" aria-label="Activar o desactivar sonidos">🔊</button>
+      </div>
+    </header>
+
+    <section id="home" class="screen home-screen">
+      <div class="hero-copy">
+        <div class="eyebrow">UNA MESA. DOS JUGADORES. A DISTANCIA.</div>
+        <h1>¡Que comience<br><span>la partida!</span></h1>
+        <p>Crea una sala privada y juega UNO con tu hijo en tiempo real desde cualquier lugar.</p>
+        <div class="home-card">
+          <label for="playerName">Tu nombre o apodo</label>
+          <input id="playerName" maxlength="18" placeholder="Ej. Papá" autocomplete="nickname">
+          <button id="createBtn" class="primary-btn">＋ Crear partida</button>
+          <div class="or-line"><span>o entra con un código</span></div>
+          <label for="roomCode">Código de la sala</label>
+          <input id="roomCode" maxlength="5" placeholder="ABCDE" class="code-input" autocomplete="off">
+          <button id="joinBtn" class="secondary-btn">Unirme a la partida</button>
+          <p id="homeError" class="error-message" role="alert"></p>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="floating-card card-red">7</div><div class="floating-card card-blue">↻</div>
+        <div class="floating-card card-yellow">2</div><div class="floating-card card-green">＋2</div>
+        <div class="hero-orbit"></div><div class="hero-center">UNO</div>
+      </div>
+    </section>
+
+    <section id="lobby" class="screen lobby-screen hidden">
+      <div class="lobby-panel">
+        <div class="eyebrow">SALA PRIVADA</div>
+        <h1>Tu mesa está lista</h1>
+        <p>Copia el enlace de invitación y envíaselo por WhatsApp a tu hijo:</p>
+        <div class="room-code-wrap">
+          <strong id="roomCodeDisplay">-----</strong>
+          <button id="copyCode" class="copy-btn" title="Copiar enlace de invitación">Copiar enlace 🔗</button>
+        </div>
+        <p id="lobbyStatus" class="lobby-status">Esperando al segundo jugador…</p>
+        <div id="lobbyPlayers" class="lobby-players"></div>
+        <button id="backHome" class="text-btn">Volver al inicio</button>
+      </div>
+    </section>
+
+    <section id="game" class="screen game-screen hidden">
+      <div class="game-heading">
+        <div><div class="eyebrow">PARTIDA PRIVADA <span id="gameRoomCode"></span></div><h1>UNO <span>ONLINE</span></h1></div>
+        <div class="game-heading-right"><span id="turnPill" class="turn-pill">Preparando mesa…</span><button id="leaveBtn" class="icon-btn" title="Salir de la sala">↩</button></div>
+      </div>
+      <div class="table-surface">
+        <div class="opponent-zone">
+          <div class="player-info" id="opponentInfo">
+            <div class="avatar">👦</div>
+            <div><strong>Oponente</strong><small>Conectando…</small></div>
+            <span class="card-count">0</span>
+          </div>
+          <div id="opponentCards" class="opponent-cards"></div>
+        </div>
+        <div class="center-zone">
+          <div class="table-message" id="tableMessage">Esperando la partida…</div>
+          <div class="piles">
+            <div class="pile-group">
+              <span>MAZO</span>
+              <button id="drawBtn" class="deck-card" aria-label="Robar una carta"><span>UNO</span></button>
+              <small id="deckCount">0 cartas</small>
+            </div>
+            <div class="pile-group">
+              <span>EN JUEGO</span>
+              <div id="discardPile" class="discard-slot"><div class="empty-card">—</div></div>
+              <small id="activeColorLabel" class="active-color-badge">Color activo</small>
+            </div>
+          </div>
+          <div id="challengeActions" class="challenge-actions hidden">
+            <button id="challengeBtn" class="secondary-btn">Desafiar +4</button>
+            <button id="acceptBtn" class="primary-btn">Aceptar +4</button>
+          </div>
+          <button id="catchUnoBtn" class="catch-uno hidden">¡PILLÉ EL UNO! (+2)</button>
+        </div>
+        <div class="self-zone">
+          <div class="player-info self-info" id="selfInfo">
+            <div class="avatar">👨</div>
+            <div><strong>Tú</strong><small>Tu mano</small></div>
+            <span class="card-count">0</span>
+          </div>
+          <div id="myHand" class="my-hand"></div>
+          <div class="hand-controls">
+            <span id="handHint">Toca una carta resaltada para jugarla</span>
+            <button id="unoBtn" class="uno-button">¡UNO!</button>
+            <button id="passBtn" class="pass-button hidden">Pasar turno</button>
+          </div>
+        </div>
+      </div>
+      <div class="game-footer">
+        <span>♤ Disfruten la partida</span>
+        <span id="connectionGame">● Conectado</span>
+      </div>
+    </section>
+
+    <div id="colorModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="colorTitle">
+      <div class="modal-card">
+        <div class="eyebrow">COMODÍN</div>
+        <h2 id="colorTitle">Elige un color</h2>
+        <p>¿Con qué color quieres continuar?</p>
+        <div class="color-options">
+          <button data-color="red" class="color-choice red" aria-label="Rojo"></button>
+          <button data-color="blue" class="color-choice blue" aria-label="Azul"></button>
+          <button data-color="yellow" class="color-choice yellow" aria-label="Amarillo"></button>
+          <button data-color="green" class="color-choice green" aria-label="Verde"></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="winModal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-card win-card">
+        <div class="confetti">🎉 🥳 🎊</div>
+        <div class="eyebrow">FIN DE LA PARTIDA</div>
+        <h2 id="winnerTitle">¡Ganaste!</h2>
+        <p id="winnerText"></p>
+        <button id="newGameBtn" class="primary-btn">Revancha</button>
+        <button id="returnLobbyBtn" class="text-btn">Cerrar</button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status"></div>
+  </main>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
